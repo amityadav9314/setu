@@ -12,6 +12,7 @@ The backend leverages a shared library `aky-go-common` for core utilities:
 - **Logger**: Structured JSON logs.
 - **HTTP Client**: Singleton client wrapper with custom options.
 - **Workflow**: A functional state-based task execution chain.
+- **File**: Thread-safe filesystem utility providing concurrent read/write locks.
 
 ---
 
@@ -68,6 +69,16 @@ To satisfy SOLID principles (single responsibility, open-closed design) and main
 3. **LoggingTask**:
    - Non-fatal logging step executing after the request completes.
    - Logs request metadata and status code using the shared `logger` package.
+
+---
+
+## Storage Component
+
+The backend's local storage subsystem handles collections, variables, history logs, and environment configurations.
+
+To ensure data integrity during concurrent operations (e.g. executing background queries while modifying variables/environments):
+- `storage.FileSystem` delegates file read/write operations to the common library `file.Handler`.
+- Concurrent file operations are guarded via `file.LockerPerFile`, ensuring thread-safe reads (`RLock`) and writes (`Lock`) per resource filename.
 
 ---
 

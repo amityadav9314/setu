@@ -1,21 +1,42 @@
 package storage
 
-// FileSystem abstraction for file read/write operations.
-type FileSystem struct{}
+import (
+	"github.com/amityadav9314/aky-go-common/file"
+)
 
-// NewFileSystem creates a new FileSystem utility instance.
-func NewFileSystem() *FileSystem {
-	return &FileSystem{}
+// FileSystem abstraction for file read/write operations.
+type FileSystem struct {
+	handler *file.Handler
 }
 
-// WriteFile writes bytes to path, creating subdirectories if necessary.
-func (fs *FileSystem) WriteFile(path string, data []byte) error {
-	// TODO: Implement file write helper
-	return nil
+// NewFileSystem creates a new FileSystem utility instance.
+func NewFileSystem(baseDir string) (*FileSystem, error) {
+	locker := file.NewLockerPerFile()
+	handler, err := file.NewFileHandler(baseDir, locker)
+	if err != nil {
+		return nil, err
+	}
+	return &FileSystem{
+		handler: handler,
+	}, nil
+}
+
+// WriteFile writes bytes to path.
+func (fs *FileSystem) WriteFile(fileName string, data []byte) error {
+	return fs.handler.Write(fileName, data)
 }
 
 // ReadFile reads bytes from path.
-func (fs *FileSystem) ReadFile(path string) ([]byte, error) {
-	// TODO: Implement file read helper
-	return nil, nil
+func (fs *FileSystem) ReadFile(fileName string) ([]byte, error) {
+	return fs.handler.Read(fileName)
+}
+
+// DeleteFile deletes the file.
+func (fs *FileSystem) DeleteFile(fileName string) error {
+	return fs.handler.Delete(fileName)
+}
+
+// Exists checks if the file exists.
+func (fs *FileSystem) Exists(fileName string) bool {
+	return fs.handler.Exists(fileName)
 }
