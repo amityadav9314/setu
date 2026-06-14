@@ -1,0 +1,19 @@
+# Go build binaries
+bin/
+setu
+setu.exe
+
+# Node/React
+node_modules/
+dist/
+.eslintcache
+
+# Wails
+build/bin/
+frontend/src/wailsjs/
+
+# OS/IDE
+.DS_Store
+.idea/
+.vscode/
+*.log
