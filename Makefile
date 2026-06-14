@@ -1,6 +1,6 @@
-.PHONY: build dev clean install frontend-build backend-build
+.PHONY: build dev clean install frontend-build backend-build sort_imports
 
-build: install frontend-build backend-build
+build: install frontend-build backend-build sort_imports
 
 install:
 	cd frontend && npm install
@@ -36,3 +36,7 @@ clean:
 	rm -rf build/bin
 	rm -rf backend/cmd/setu/frontend
 	rm -f backend/cmd/setu/wails.json
+
+sort_imports:
+	@echo "Sorting imports..."
+	go run golang.org/x/tools/cmd/goimports@latest -w .

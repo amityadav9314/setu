@@ -1,20 +1,41 @@
 package request
 
-import "context"
+import (
+	"aky/setu/backend/internal/request/models"
+	"context"
+
+	"aky/setu/backend/internal/request/state"
+	"aky/setu/backend/internal/request/tasks"
+
+	"github.com/amityadav9314/aky-go-common/workflow"
+)
+
+// Request Type aliases to preserve API compatibility and prevent circular dependencies.
+type Request = models.Request
+type Response = models.Response
 
 // Service handles higher level request logic.
-type Service struct {
-	executor *Executor
-}
+type Service struct{}
 
 // NewService creates a new Request Service.
-func NewService(executor *Executor) *Service {
-	return &Service{
-		executor: executor,
-	}
+func NewService() *Service {
+	return &Service{}
 }
 
 // SendRequest sends a request and returns the response.
 func (s *Service) SendRequest(ctx context.Context, req *Request) (*Response, error) {
-	return s.executor.Execute(ctx, req)
+	b := workflow.NewBuilder()
+	workflow.SetValue(b, state.KeyRequest, req)
+
+	// Define the execution chain using tasks from the tasks subpackage.
+	chain := workflow.Define(b.Build(), tasks.PrepareRequestTask{}).
+		Next(tasks.HTTPExecutionTask{}).
+		Next(tasks.LoggingTask{})
+
+	finalState, err := chain.Execute(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return workflow.GetRequiredValue(finalState, state.KeyResponse)
 }

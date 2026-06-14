@@ -1,6 +1,6 @@
 # Go build binaries
 bin/
-setu
+setu/build
 setu.exe
 
 # Node/React

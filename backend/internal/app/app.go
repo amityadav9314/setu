@@ -15,8 +15,7 @@ type App struct {
 
 // NewApp creates a new App struct instance.
 func NewApp() *App {
-	executor := request.NewExecutor()
-	service := request.NewService(executor)
+	service := request.NewService()
 
 	return &App{
 		requestService: service,
