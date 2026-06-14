@@ -15,7 +15,7 @@ backend-build:
 	@cp -r frontend/dist backend/cmd/setu/frontend/
 	@cp wails.json backend/cmd/setu/wails.json
 	@sed -i 's|"frontend:dir": "frontend"|"frontend:dir": "../../../frontend"|g' backend/cmd/setu/wails.json
-	@sed -i 's|"wailsjsdir": "./frontend/src/wailsjs"|"wailsjsdir": "../../../frontend/src/wailsjs"|g' backend/cmd/setu/wails.json
+	@sed -i 's|"wailsjsdir": "./frontend/src"|"wailsjsdir": "../../../frontend/src"|g' backend/cmd/setu/wails.json
 	cd backend/cmd/setu && ~/go/bin/wails build -tags webkit2_41 -o ../../../build/bin/setu
 	@rm -rf backend/cmd/setu/frontend
 	@rm -f backend/cmd/setu/wails.json
@@ -26,7 +26,7 @@ dev:
 	@touch backend/cmd/setu/frontend/dist/placeholder
 	@cp wails.json backend/cmd/setu/wails.json
 	@sed -i 's|"frontend:dir": "frontend"|"frontend:dir": "../../../frontend"|g' backend/cmd/setu/wails.json
-	@sed -i 's|"wailsjsdir": "./frontend/src/wailsjs"|"wailsjsdir": "../../../frontend/src/wailsjs"|g' backend/cmd/setu/wails.json
+	@sed -i 's|"wailsjsdir": "./frontend/src"|"wailsjsdir": "../../../frontend/src"|g' backend/cmd/setu/wails.json
 	cd backend/cmd/setu && ~/go/bin/wails dev -tags webkit2_41
 	@rm -rf backend/cmd/setu/frontend
 	@rm -f backend/cmd/setu/wails.json
