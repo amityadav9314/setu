@@ -38,5 +38,3 @@ require (
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 )
-
-replace github.com/amityadav9314/aky-go-common => /home/aky/Coding/go/aky-go-common

@@ -10,6 +10,7 @@ dist/
 
 # Wails
 build/bin/
+backend/cmd/setu/build/
 frontend/src/wailsjs/
 
 # OS/IDE
