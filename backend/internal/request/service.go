@@ -1,6 +1,8 @@
 package request
 
 import (
+	"aky/setu/backend/internal/config"
+	"aky/setu/backend/internal/history"
 	"aky/setu/backend/internal/request/models"
 	"context"
 
@@ -14,23 +16,31 @@ import (
 type Request = models.Request
 type Response = models.Response
 
-// Service handles higher level request logic.
-type Service struct{}
+type Service struct {
+	sysConfig      config.Config
+	historyService *history.Service
+}
 
 // NewService creates a new Request Service.
-func NewService() *Service {
-	return &Service{}
+func NewService(sysConfig config.Config) *Service {
+	hs := history.NewService(sysConfig)
+	return &Service{
+		sysConfig:      sysConfig,
+		historyService: hs,
+	}
 }
 
 // SendRequest sends a request and returns the response.
 func (s *Service) SendRequest(ctx context.Context, req *Request) (*Response, error) {
 	b := workflow.NewBuilder()
 	workflow.SetValue(b, state.KeyRequest, req)
+	workflow.SetValue(b, state.KeyHistoryService, s.historyService)
 
 	// Define the execution chain using tasks from the tasks subpackage.
 	chain := workflow.Define(b.Build(), tasks.PrepareRequestTask{}).
 		Next(tasks.HTTPExecutionTask{}).
-		Next(tasks.LoggingTask{})
+		Next(tasks.LoggingTask{}).
+		Next(tasks.SaveHistoryTask{})
 
 	finalState, err := chain.Execute(ctx)
 	if err != nil {

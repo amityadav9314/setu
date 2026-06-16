@@ -20,7 +20,7 @@ type App struct {
 // NewApp creates a new App struct instance.
 func NewApp() *App {
 	sysConfig := config.LoadConfig()
-	reqService := request.NewService()
+	reqService := request.NewService(sysConfig)
 	historyService := history.NewService(sysConfig)
 
 	return &App{

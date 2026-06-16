@@ -1,6 +1,7 @@
 package state
 
 import (
+	"aky/setu/backend/internal/history"
 	"aky/setu/backend/internal/request/models"
 	"time"
 
@@ -10,8 +11,9 @@ import (
 
 // Declare typed workflow state keys.
 var (
-	KeyRequest   = workflow.NewKey[*models.Request]("request")
-	KeyOptions   = workflow.NewKey[*httpclient.RequestOptions]("http_options")
-	KeyResponse  = workflow.NewKey[*models.Response]("response")
-	KeyStartTime = workflow.NewKey[time.Time]("start_time")
+	KeyRequest        = workflow.NewKey[*models.Request]("request")
+	KeyOptions        = workflow.NewKey[*httpclient.RequestOptions]("http_options")
+	KeyResponse       = workflow.NewKey[*models.Response]("response")
+	KeyStartTime      = workflow.NewKey[time.Time]("start_time")
+	KeyHistoryService = workflow.NewKey[*history.Service]("history_service")
 )

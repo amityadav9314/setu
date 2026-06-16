@@ -32,17 +32,14 @@ The backend leverages a shared library `aky-go-common` for core utilities:
              +---------------+---------------+
              |   workflow.ExecutionChain     |
              +---------------+---------------+
-                             |
-       +---------------------+---------------------+
-       |                     |                     |
-       v                     v                     v
-[PrepareRequestTask]  [HTTPExecutionTask]    [LoggingTask]
-       |                     |                     |
-       |             +-------+-------+             |
-       |             |               |             |
-       v             v               v             v
-   (Standard)  (httpclient.     (logger.        (logger.
-   (Parsers)    GetClient)        Info)          Error)
+                              |
+        +---------------------+---------------------+---------------------+
+        |                     |                     |                     |
+        v                     v                     v                     v
+ [PrepareRequestTask]  [HTTPExecutionTask]    [LoggingTask]       [SaveHistoryTask]
+        |                     |                     |                     |
+        v                     v                     v                     v
+    (Standard)          (httpclient)            (logger)              (history)
 ```
 
 ### Request Package Directory Structure
@@ -50,7 +47,7 @@ The backend leverages a shared library `aky-go-common` for core utilities:
 To keep components clean and maintainable, request handling is divided into specialized subpackages:
 - **`request/state`**: Holds structural models (`Request`, `Response`) and workflow execution state keys (`KeyRequest`, `KeyOptions`, etc.). This package has zero dependencies on other request subpackages, preventing circular imports.
 - **`request/helpers`**: Contains utility logic for mapping state types to HTTP request options.
-- **`request/tasks`**: Declares discrete workflow execution tasks (`PrepareRequestTask`, `HTTPExecutionTask`, `LoggingTask`).
+- **`request/tasks`**: Declares discrete workflow execution tasks (`PrepareRequestTask`, `HTTPExecutionTask`, `LoggingTask`, `SaveHistoryTask`).
 - **`request/service.go`**: Orchestrates tasks via `workflow.ExecutionChain`. It declares type aliases for `state.Request` and `state.Response` to remain fully backwards compatible.
 
 ### Request Execution Workflow
@@ -69,6 +66,10 @@ To satisfy SOLID principles (single responsibility, open-closed design) and main
 3. **LoggingTask**:
    - Non-fatal logging step executing after the request completes.
    - Logs request metadata and status code using the shared `logger` package.
+
+4. **SaveHistoryTask**:
+   - Non-fatal history saving step executing after logging.
+   - Saves the executed request history item using the history service.
 
 ---
 

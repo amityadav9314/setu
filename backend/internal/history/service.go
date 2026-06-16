@@ -2,6 +2,7 @@ package history
 
 import (
 	"aky/setu/backend/internal/config"
+	"aky/setu/backend/internal/request/models"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -32,10 +33,10 @@ func NewService(config config.Config) *Service {
 }
 
 // Add appends a new item and prunes history if max limit is reached.
-func (s *Service) Add(item *HistoryItem) error {
+func (s *Service) Add(item *models.HistoryItem) error {
 	uuid.NewString()
 	ns := time.Now().UnixNano()
-	fileName := fmt.Sprintf("%s.json", ns)
+	fileName := fmt.Sprintf("%d.json", ns)
 	data, err := json.Marshal(&item)
 	if err != nil {
 		return err
@@ -44,7 +45,7 @@ func (s *Service) Add(item *HistoryItem) error {
 }
 
 // GetAll returns history list sorted by timestamp.
-func (s *Service) GetAll() ([]*HistoryItem, error) {
+func (s *Service) GetAll() ([]*models.HistoryItem, error) {
 	files, err := s.fileHandler.List()
 	if err != nil {
 		return nil, err
@@ -52,7 +53,7 @@ func (s *Service) GetAll() ([]*HistoryItem, error) {
 
 	sort.Strings(files) // timestamp filenames sort naturally
 
-	items := make([]*HistoryItem, 0, len(files))
+	items := make([]*models.HistoryItem, 0, len(files))
 
 	for _, thisFile := range files {
 		data, err := s.fileHandler.Read(thisFile)
@@ -60,7 +61,7 @@ func (s *Service) GetAll() ([]*HistoryItem, error) {
 			return nil, err
 		}
 
-		var item HistoryItem
+		var item models.HistoryItem
 
 		if err := json.Unmarshal(data, &item); err != nil {
 			return nil, err
@@ -74,5 +75,5 @@ func (s *Service) GetAll() ([]*HistoryItem, error) {
 
 // Clear removes all history items.
 func (s *Service) Clear() error {
-	return s.fileHandler.deleteAll()
+	return s.fileHandler.DeleteAll()
 }
