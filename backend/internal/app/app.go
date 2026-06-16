@@ -1,6 +1,8 @@
 package app
 
 import (
+	"aky/setu/backend/internal/config"
+	"aky/setu/backend/internal/history"
 	"context"
 	"fmt"
 
@@ -11,14 +13,20 @@ import (
 type App struct {
 	ctx            context.Context
 	requestService *request.Service
+	historyService *history.Service
+	config         config.Config
 }
 
 // NewApp creates a new App struct instance.
 func NewApp() *App {
-	service := request.NewService()
+	sysConfig := config.LoadConfig()
+	reqService := request.NewService()
+	historyService := history.NewService(sysConfig)
 
 	return &App{
-		requestService: service,
+		requestService: reqService,
+		config:         sysConfig,
+		historyService: historyService,
 	}
 }
 
